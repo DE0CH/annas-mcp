@@ -64,16 +64,18 @@ def download(md5):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        sys.exit("usage: aa.py search [--type book_any|journal|...] <query>  |  aa.py get <md5>")
+        sys.exit(f"usage: aa.py search [--type {'|'.join(TYPE_PARAMS)}] <query>  |  aa.py get <md5>")
     cmd = sys.argv[1]
     if cmd == "search":
         args = sys.argv[2:]
-        content = "book_any"
+        type = "book"
         if "--type" in args:
             i = args.index("--type")
-            content = args[i + 1]
+            type = args[i + 1]
             args = args[:i] + args[i + 2:]
-        for md5, title in search(" ".join(args), content=content):
+        if type not in TYPE_PARAMS:
+            sys.exit(f"unknown --type {type!r}; options: {', '.join(TYPE_PARAMS)}")
+        for md5, title in search(" ".join(args), type=type):
             print(f"{md5}  {title}")
     elif cmd == "get":
         download(sys.argv[2])
